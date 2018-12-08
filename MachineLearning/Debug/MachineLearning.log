@@ -1,0 +1,3 @@
+﻿  main.cpp
+c:\users\arans\source\repos\machinelearning\machinelearning\main.cpp(72): warning C4715: 'WindowProcedure': no todas las rutas de acceso de control devuelven un valor
+  MachineLearning.vcxproj -> C:\Users\arans\source\repos\MachineLearning\Debug\MachineLearning.exe
