@@ -17,9 +17,7 @@ Se supone que mi objetivo es renderizar OpenGl en la ventana hecha con Win32 API
 que quedaria muy chula.
 */
 
-#include <GL/glew.h>
-#include <GL/GL.h>
-#include <GL/GLU.h>
+#include "draw.h"
 
 HGLRC           hRC = NULL;                           // Permanent Rendering Context
 HDC             hDC = NULL;                           // Private GDI Device Context
@@ -29,9 +27,12 @@ HWND            hWnd = GetActiveWindow();          // Gets HWND of the current w
 
 bool            keys[256];                              // Array Used For The Keyboard Routine
 bool            active = TRUE;                                // Window Active Flag Set To TRUE By Default
+bool			menued = FALSE;								// The window is menued
 bool            fullscreen = TRUE;                            // Fullscreen Flag Set To Fullscreen Mode By Default
+bool			uppedKeys[256];
 
-int bits = 0;
+int			    bits = 0;
+int				currentWidth, currentHeight;
 
 LRESULT CALLBACK WindowProcedure(HWND, UINT, WPARAM, LPARAM);
 
@@ -70,12 +71,6 @@ int InitGL(GLvoid) { // All Setup For OpenGL Goes Here
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);          // Really Nice Perspective Calculations :D
 
 	return TRUE;
-}
-int DrawGLScene(GLvoid)                             // Here's Where We Do All The Drawing
-{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);         // Clear The Screen And The Depth Buffer
-	glLoadIdentity();                           // Reset The Current Modelview Matrix
-	return TRUE;                                // Everything Went OK
 }
 GLvoid KillGLWindow(GLvoid) {                     // Properly Kill The Window
 	if (fullscreen) { // We are in fullscreen?
@@ -158,7 +153,11 @@ int InitializeWindow(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmds
 	DWORD       dwExStyle;                      // Window Extended Style
 	DWORD       dwStyle;                        // Window Style
 
-	if (MessageBox(NULL, "Would You Like To Run In Fullscreen Mode?", "Start FullScreen?", MB_YESNO | MB_ICONQUESTION) == IDNO)
+	MessageBox(NULL, "Welcome to my OpenGl + Win32 API app for Windows developed in C++!", "Aran's OpenGl Test!", MB_OK);
+	MessageBox(NULL, "My objective is to make this app for at least displaying a machine learning progress, because I don't have any idea of machine learning, and OpenGl", "Aran's OpenGl Test!", MB_OK);
+	MessageBox(NULL, "So I'm now learning OpenGl by improving this, now let's get into the app!","Aran's OpenGl Test!", MB_OK);
+	MessageBox(NULL, "- Press ESC to exit the program\n- Press INS (Insert) to hide/show the menu\n- Press space if you want SPEED!", "Tutorial", MB_OK);
+	if (MessageBox(NULL, "Would You Like To Run In Fullscreen Mode? (Changing fullscreen in runtime is still under development :P)", "Start FullScreen?", MB_YESNO | MB_OK) == IDNO)
 	{
 		windowFullscreen = FALSE;                       // Windowed Mode
 	}
@@ -304,7 +303,7 @@ int InitializeWindow(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmds
 	ShowWindow(hWnd, SW_SHOW);                       // Show The Window
 	SetForegroundWindow(hWnd);                      // Slightly Higher Priority
 	SetFocus(hWnd);                             // Sets Keyboard Focus To The Window
-	ReSizeGLScene(finalWidth, finalHeight);                       // Set Up Our Perspective GL Screen
+	ReSizeGLScene(Wwidth, Wheight);                       // Set Up Our Perspective GL Screen
 
 
 	AdjustWindowRectEx(&WindowRect, dwStyle, FALSE, dwExStyle);     // Adjust Window To True Requested Size
@@ -321,11 +320,20 @@ int InitializeWindow(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmds
 		MessageBox(NULL, "Initialization Failed.", "ERROR", MB_OK | MB_ICONEXCLAMATION);
 		return FALSE;                           // Return FALSE
 	}
+
+	// Done initializing message
+	// Draw scene for first time
+	DrawGLScene();              // Draw The Scene
+	SwapBuffers(hDC);           // Swap Buffers (Double Buffering)s
+	MessageBox(NULL, "So here you have a colorful cube! Enjoy :D", "Done!", MB_OK);
 }
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 	switch (msg) {
 	case WM_CREATE: // Esto ocurre cuando la window detecta que fue creada
-		if (!windowFullscreen) AddMenus(hMenu, hwnd); // Se añaden ahora después de decir si la ventana es fullscreen o no
+		if (!windowFullscreen) {
+			AddMenus(hMenu, hwnd); // Se añaden ahora después de decir si la ventana es fullscreen o no
+			menued = true;
+		}
 		break;
 	case WM_DESTROY: // Esto ocurre cuando la window detecta que se cierra
 		done = TRUE;
@@ -354,30 +362,42 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		break;                          // Exit
 	case WM_KEYDOWN:                        // Is A Key Being Held Down?
 		keys[wp] = TRUE;                    // If So, Mark It As TRUE
+		switch (wp) {
+		case VK_SPACE:
+			rotationSpeed += 0.02f; // SPEEEEEEEEEEEEEEEEEEEEEED LOOOOOOOOOOCO!
+		}
 		break;
 	case WM_KEYUP:                          // Has A Key Been Released?
 		keys[wp] = FALSE;                   // If So, Mark It As FALSE
+		// Comprobacion de key releseada
+		switch (wp) {
+		case VK_ESCAPE:
+			done = true;
+		case VK_INSERT:
+			// Do menu switch
+			if (menued) RemoveMenus(hwnd);
+			else AddMenus(hMenu, hwnd);
+			menued = !menued;
+		}
 		break;
 	case WM_SIZE:                           // Resize The OpenGL Window
-		ReSizeGLScene(LOWORD(lp), HIWORD(lp));       // LoWord=Width, HiWord=Height
+		currentWidth = LOWORD(lp), currentHeight = HIWORD(lp);
+		ReSizeGLScene(currentWidth, currentHeight);       // LoWord=Width, HiWord=Height
+		SwapBuffers(hDC);           // Swap Buffers (Double Buffering)
 		break;
 	}
 	return DefWindowProcW(hwnd, msg, wp, lp);
 }
 WPARAM ProgramDefaultLoop() {
 	MSG msg = { 0 };
-	while (GetMessage(&msg, NULL, NULL, NULL) && !done) {
-		TranslateMessage(&msg);             // Translate The Message
-		DispatchMessage(&msg);              // Dispatch The Message
-		if (keys[VK_ESCAPE])                // Was ESC Pressed?
-		{
-			done = TRUE;              // ESC Signalled A Quit
+	while (!done) {
+		DrawGLScene();              // Draw The Scene
+		SwapBuffers(hDC);           // Swap Buffers (Double Buffering)s
+		if (PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE)) {
+			TranslateMessage(&msg);             // Translate The Message
+			DispatchMessage(&msg);              // Dispatch The Message
 		}
-		else                        // Not Time To Quit, Update Screen
-		{
-			DrawGLScene();              // Draw The Scene
-			SwapBuffers(hDC);           // Swap Buffers (Double Buffering)
-		}
+		
 	}
 
 	// Se ha cerrado

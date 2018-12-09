@@ -1,4 +1,4 @@
 ﻿  main.cpp
-x:\programming algoritmic things\c++\proyectos\machinelearning\machinelearning\graphics.h(133): warning C4838: la conversión de 'int' en 'BYTE' requiere una conversión de restricción
-x:\programming algoritmic things\c++\proyectos\machinelearning\machinelearning\graphics.h(324): warning C4715: 'InitializeWindow': no todas las rutas de acceso de control devuelven un valor
-  MachineLearning.vcxproj -> X:\Programming Algoritmic Things\C++\Proyectos\MachineLearning\x64\Debug\MachineLearning.exe
+x:\programming algoritmic things\git\windows-app-for-machine-learning\machinelearning\graphics.h(128): warning C4838: la conversión de 'int' en 'BYTE' requiere una conversión de restricción
+x:\programming algoritmic things\git\windows-app-for-machine-learning\machinelearning\graphics.h(329): warning C4715: 'InitializeWindow': no todas las rutas de acceso de control devuelven un valor
+  MachineLearning.vcxproj -> X:\Programming Algoritmic Things\git\windows-app-for-machine-learning\x64\Debug\MachineLearning.exe

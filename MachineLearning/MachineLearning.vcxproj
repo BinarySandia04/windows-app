@@ -133,6 +133,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="draw.h" />
     <ClInclude Include="graphics.h" />
     <ClInclude Include="menu_manager.h" />
     <ClInclude Include="screen_manager.h" />

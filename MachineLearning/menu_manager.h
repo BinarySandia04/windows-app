@@ -31,6 +31,10 @@ void AddMenus(HMENU hMenu, HWND hWnd) {
 	SetMenu(hWnd, hMenu);
 }
 
+void RemoveMenus(HWND hWnd) {
+	SetMenu(hWnd, NULL);
+}
+
 void menuClickedAction(WPARAM wp, HWND hWnd) {
 	switch (wp) {
 	case MENU_NEW_FILE:

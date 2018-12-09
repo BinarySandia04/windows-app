@@ -29,5 +29,8 @@
     <ClInclude Include="graphics.h">
       <Filter>Archivos de origen</Filter>
     </ClInclude>
+    <ClInclude Include="draw.h">
+      <Filter>Archivos de origen</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
