@@ -1,4 +1,4 @@
-# Windows App for Machine Learning
+# Windows App test
 This my first C++ OpenGl + Win32 API app for Windows!
 
 I'm trying to do my best by understanding OpenGl and Win32 API. I'm very confused so I usually
