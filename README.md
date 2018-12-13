@@ -9,4 +9,4 @@ http://nehe.gamedev.net/
 So, this app now what actually does is display a cube. And you can, for example, look at it and observe how it rotates.
 It's very satisfying.
 
-![Cube image](/doc/img1.png)
+![Cube image](/doc/img1.PNG)
